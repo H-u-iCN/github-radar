@@ -8,6 +8,8 @@ _site/
 .preview/
 _*.html
 data/_*
+data/legacy/_*
+data/legacy/snippets/
 
 # 页面用的数据副本，部署前由 scripts/build.mjs 从 latest.json 生成
 data/latest.js
