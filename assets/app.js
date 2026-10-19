@@ -175,11 +175,20 @@
     stars.title = `${p.stars.toLocaleString()} star`;
     foot.append(stars);
 
-    const growVal = p.delta7d ?? p.trendingDailyStars;
-    if (growVal) {
-      const label = p.delta7d != null ? `+${fmtNum(p.delta7d)}/周` : `+${fmtNum(p.trendingDailyStars)}/天`;
-      foot.append(el('span', 'grow', label));
-    }
+    const d1 = p.trendingDailyStars || p.delta1d;
+    const d7 = p.delta7d || p.trendingWeeklyStars;
+    if (d1) foot.append(el('span', 'grow', `+${fmtNum(d1)}/天`));
+    if (d7) foot.append(el('span', 'grow', `+${fmtNum(d7)}/周`));
+
+    const cmp = el('button', 'cmp-btn' + (compareSet.has(p.fullName) ? ' on' : ''), compareSet.has(p.fullName) ? '✓' : '⇄');
+    cmp.dataset.repo = p.fullName;
+    cmp.title = '加入对比（最多 3 个）';
+    cmp.setAttribute('aria-label', '加入对比');
+    cmp.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCompare(p.fullName);
+    });
+    foot.append(cmp);
 
     const fav = el('button', 'fav-btn' + (favs.has(p.fullName) ? ' on' : ''), favs.has(p.fullName) ? '★' : '☆');
     fav.title = '收藏 / 取消收藏';
@@ -275,6 +284,8 @@
     $('statTrending').textContent = String(PROJECTS.filter((p) => p.trendingRank).length);
     const zh = PROJECTS.filter((p) => p.descZh).length;
     $('statZh').textContent = `${zh}/${PROJECTS.length}`;
+    const totalStars = PROJECTS.reduce((sum, p) => sum + (p.stars || 0), 0);
+    $('statStars').textContent = fmtNum(totalStars);
 
     $('metaLine').textContent = meta.generatedAt
       ? `更新于 ${fmtTime(meta.generatedAt)}`
@@ -359,6 +370,104 @@
 
   dialog.addEventListener('click', (e) => {
     if (e.target === dialog) dialog.close();
+  });
+
+  /* ---------------- 项目对比 ---------------- */
+  const compareSet = new Set();
+  const compareBar = $('compareBar');
+  const compareChips = $('compareChips');
+  const compareCount = $('compareCount');
+  const compareGo = $('compareGo');
+  const compareClear = $('compareClear');
+  const compareDialog = $('compareDialog');
+  const compareBody = $('compareBody');
+  const byRepo = new Map(PROJECTS.map((p) => [p.fullName, p]));
+
+  function refreshCompareBar() {
+    compareCount.textContent = String(compareSet.size);
+    compareGo.disabled = compareSet.size < 2;
+    compareBar.hidden = compareSet.size === 0;
+    const frag = document.createDocumentFragment();
+    for (const repo of compareSet) {
+      const chip = el('span', 'compare-chip', repo);
+      const x = el('button', null, '×');
+      x.title = '移出对比';
+      x.addEventListener('click', () => toggleCompare(repo));
+      chip.append(x);
+      frag.append(chip);
+    }
+    compareChips.replaceChildren(frag);
+    document.querySelectorAll('.card .cmp-btn').forEach((btn) => {
+      const on = compareSet.has(btn.dataset.repo);
+      btn.classList.toggle('on', on);
+      btn.textContent = on ? '✓' : '⇄';
+    });
+  }
+
+  function toggleCompare(repo) {
+    if (compareSet.has(repo)) compareSet.delete(repo);
+    else if (compareSet.size >= 3) {
+      toast('最多同时对比 3 个项目');
+      return;
+    } else compareSet.add(repo);
+    refreshCompareBar();
+  }
+
+  function openCompare() {
+    const list = [...compareSet].map((r) => byRepo.get(r)).filter(Boolean);
+    if (list.length < 2) return;
+
+    const head = el('div');
+    head.append(el('h2', null, '项目对比'));
+    head.append(el('p', 'repo-path', `并排对比 ${list.length} 个项目：Star、Fork、语言、协议、时间、分类`));
+
+    const table = el('table', 'cmp-table');
+    const thead = el('thead');
+    const headRow = el('tr');
+    headRow.append(el('th', null, ''));
+    for (const p of list) {
+      const th = el('th');
+      const link = el('a', null, p.fullName);
+      link.href = p.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      th.append(link);
+      headRow.append(th);
+    }
+    thead.append(headRow);
+    table.append(thead);
+
+    const tbody = el('tbody');
+    const rows = [
+      ['中文概括', (p) => p.descZh || p.desc || '—', 'cmp-zh'],
+      ['Star', (p) => p.stars.toLocaleString()],
+      ['Fork', (p) => p.forks.toLocaleString()],
+      ['语言', (p) => p.language || '—'],
+      ['协议', (p) => p.license || '—'],
+      ['创建于', (p) => fmtDate(p.createdAt)],
+      ['最近推送', (p) => fmtDate(p.pushedAt)],
+      ['分类', (p) => (p.categories || []).map((c) => CAT_MAP.get(c)?.name).filter(Boolean).join(' / ') || '—'],
+      ['今日新增 Star', (p) => (p.trendingDailyStars ? '+' + p.trendingDailyStars.toLocaleString() : '—')],
+      ['周涨幅', (p) => (p.delta7d != null ? '+' + p.delta7d.toLocaleString() : '—')],
+    ];
+    for (const [label, get, cls] of rows) {
+      const tr = el('tr');
+      tr.append(el('th', null, label));
+      for (const p of list) tr.append(el('td', cls || null, get(p)));
+      tbody.append(tr);
+    }
+    table.append(tbody);
+    compareBody.replaceChildren(head, table);
+    compareDialog.showModal();
+  }
+
+  compareGo.addEventListener('click', openCompare);
+  compareClear.addEventListener('click', () => {
+    compareSet.clear();
+    refreshCompareBar();
+  });
+  compareDialog.addEventListener('click', (e) => {
+    if (e.target === compareDialog) compareDialog.close();
   });
 
   /* ---------------- 往期回顾（每天 Top 80 归档） ---------------- */
@@ -451,6 +560,7 @@
       ['🔥 综合热度', '优先展示 GitHub Trending 当日上榜项目，再叠加周增速和总 Star。'],
       ['📈 涨幅', '「+3.2k/周」需要至少两次采集后才有；首日只有 Trending 的当日涨幅。'],
       ['⭐ 收藏', '点卡片右下角星标，数据存在本机浏览器，下次打开还在。'],
+      ['⚖️ 项目对比', '点卡片上的 ⇄ 最多选 3 个项目，底部出现「开始对比」，可以并排比 Star、语言、协议和时间。'],
       ['📅 往期回顾', '点右上角日历图标，可以翻看以前每天的热门前 80 条——历史是本站自己归档的，不依赖外部。'],
       ['📋 导出', '把当前筛选结果复制成 Markdown 列表，直接贴到聊天或笔记里分享。'],
     ];
@@ -540,7 +650,7 @@
       searchInput.focus();
       searchInput.select();
     } else if (e.key === 'Escape') {
-      if (dialog.open || historyDialog.open) return;
+      if (dialog.open || historyDialog.open || compareDialog.open) return;
       if (document.activeElement === searchInput) {
         searchInput.value = '';
         state.q = '';

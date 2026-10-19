@@ -35,6 +35,7 @@
     <div class="stat"><b id="statCats">-</b><span>主题分类</span></div>
     <div class="stat"><b id="statTrending">-</b><span>今日上榜</span></div>
     <div class="stat"><b id="statZh">-</b><span>中文概括</span></div>
+    <div class="stat"><b id="statStars">-</b><span>累计 Star</span></div>
   </section>
 
   <section class="toolbar" aria-label="筛选">
@@ -118,6 +119,17 @@
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<div id="compareBar" class="compare-bar" hidden>
+  <span class="compare-tip">对比 <b id="compareCount">0</b> / 3</span>
+  <div id="compareChips" class="compare-chips"></div>
+  <button class="btn primary" id="compareGo" disabled>开始对比</button>
+  <button class="btn" id="compareClear">清空</button>
+</div>
+
+<dialog id="compareDialog" class="dialog">
+  <div class="dialog-body" id="compareBody"></div>
+</dialog>
 
 <script src="data/latest.js"></script>
 <script src="data/archive/index.js"></script>
