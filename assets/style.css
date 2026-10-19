@@ -589,6 +589,95 @@ body {
 ::-webkit-scrollbar-thumb { background: #2a3647; border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 
+/* ---------- 历史索引 ---------- */
+.legacy-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.legacy-row {
+  display: grid;
+  grid-template-columns: 46px minmax(140px, 1.1fr) minmax(170px, 1.4fr) 108px 76px 112px minmax(180px, 1.8fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.legacy-row:last-child { border-bottom: 0; }
+.legacy-row:hover { background: var(--card-hover); }
+
+.legacy-year { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.legacy-name {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legacy-name:hover { color: var(--blue); }
+
+.legacy-repo {
+  color: var(--faint);
+  font-family: ui-monospace, Consolas, 'Courier New', monospace;
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legacy-status {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.s-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.s-slowing {
+  color: #d29922;
+  background: rgba(210, 153, 34, 0.13);
+  border: 1px solid rgba(210, 153, 34, 0.4);
+}
+
+.s-stopped,
+.s-unknown {
+  color: var(--faint);
+  background: var(--chip-bg);
+  border: 1px solid var(--border);
+}
+
+.legacy-last { color: var(--faint); font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.legacy-zh {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legacy-more { align-self: center; margin: 14px auto; }
+
+@media (max-width: 900px) {
+  .legacy-list { overflow-x: auto; }
+  .legacy-row { min-width: 880px; }
+}
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 820px) {
   .stats { grid-template-columns: repeat(2, 1fr); }

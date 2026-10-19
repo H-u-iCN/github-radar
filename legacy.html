@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark light" />
+<title>历史索引 · GitHub 开源雷达</title>
+<meta name="description" content="2018–2025 年开源项目历史索引，标注是否仍在更新、最后提交时间。" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <a class="brand-mark" href="index.html" title="返回首页" style="text-decoration:none">🛰️</a>
+      <div>
+        <h1>历史索引</h1>
+        <p class="tagline">2018–2025 · 只看「是否还在更新」</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a class="ghost-btn" href="index.html" style="text-decoration:none">← 回首页</a>
+      <span class="meta-line" id="metaLine"></span>
+      <button class="icon-btn" id="themeBtn" title="切换深浅色">🌗</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="stats" aria-label="统计">
+    <div class="stat"><b id="stTotal">-</b><span>历史项目</span></div>
+    <div class="stat"><b id="stActive">-</b><span>仍在更新</span></div>
+    <div class="stat"><b id="stSlowing">-</b><span>更新放缓</span></div>
+    <div class="stat"><b id="stStopped">-</b><span>已停更</span></div>
+  </section>
+
+  <section class="toolbar" aria-label="筛选">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="search" placeholder="搜索项目名、仓库名、中文概括…（按 / 聚焦）" autocomplete="off" />
+      <kbd>/</kbd>
+    </div>
+    <div class="selects">
+      <label class="field"><span>状态</span>
+        <select id="statusSel">
+          <option value="all">全部</option>
+          <option value="active">仍在更新</option>
+          <option value="slowing">更新放缓</option>
+          <option value="stopped">已停更</option>
+          <option value="unknown">状态未知</option>
+        </select>
+      </label>
+      <label class="field"><span>年份</span><select id="yearSel"><option value="all">全部</option></select></label>
+      <label class="field"><span>分类</span><select id="catSel"><option value="all">全部</option></select></label>
+    </div>
+  </section>
+
+  <div class="list-head">
+    <span id="resultCount">—</span>
+    <span class="hint">活跃度：90 天内有提交 = 仍在更新；90–365 天 = 放缓；超过 365 天 = 已停更</span>
+  </div>
+
+  <section id="list" class="legacy-list" aria-live="polite"></section>
+  <div id="empty" class="empty" hidden><p>没有匹配的项目。</p></div>
+</main>
+
+<footer class="footer wrap">
+  <p>
+    来源：<a href="https://github.com/GitHubDaily/GitHubDaily" target="_blank" rel="noopener noreferrer">GitHubDaily/GitHubDaily</a>
+    2018–2025 年度复盘。<span id="sourceLine"></span>
+  </p>
+  <p class="muted">
+    原仓库没有 LICENSE，这里只索引「项目名 + 原始链接 + 年份 + 分类」，不转载任何原文文案。
+    活跃度由 GitHub 最新提交时间判断，可能因仓库改名、删除而缺失。
+  </p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="data/legacy/legacy.js"></script>
+<script src="assets/legacy.js"></script>
+</body>
+</html>

@@ -49,6 +49,18 @@ try {
   // 还没有归档，第一次采集后才有
 }
 
+// 历史索引页（2018–2025）
+try {
+  await fs.copyFile(path.join(ROOT, 'legacy.html'), path.join(SITE, 'legacy.html'));
+  await fs.mkdir(path.join(SITE, 'data', 'legacy'), { recursive: true });
+  await fs.copyFile(
+    path.join(ROOT, 'data', 'legacy', 'legacy.js'),
+    path.join(SITE, 'data', 'legacy', 'legacy.js'),
+  );
+} catch {
+  // 还没生成历史索引
+}
+
 // 顺手放一个 robots.txt
 await fs.writeFile(path.join(SITE, 'robots.txt'), 'User-agent: *\nAllow: /\n', 'utf8');
 

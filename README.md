@@ -37,9 +37,11 @@ npm run serve
 ```
 .
 ├── index.html                      # 站点入口
+├── legacy.html                     # 历史索引页（2018–2025 + 活跃度）
 ├── assets/
 │   ├── style.css                   # 样式（深浅色主题）
-│   └── app.js                      # 前端逻辑（无框架）
+│   ├── app.js                      # 首页逻辑（无框架）
+│   └── legacy.js                   # 历史索引页逻辑
 ├── data/
 │   ├── latest.json                 # 最新一次采集结果（提交进仓库的唯一数据源）
 │   ├── latest.js                   # 由 latest.json 生成（不提交，file:// 也能直接读）
@@ -55,6 +57,10 @@ npm run serve
 │   ├── collect.mjs                 # 主流程
 │   ├── pending-summaries.mjs       # 列出还没中文概括的项目
 │   ├── apply-summaries.mjs         # 把 `编号|中文` 批量合并进 summary-zh.json
+│   ├── import-githubdaily.mjs      # 导入历史索引（仅名称+链接）
+│   ├── check-activity.mjs          # 批量检查最后提交时间
+│   ├── build-legacy.mjs            # 合并历史索引 + 活跃度 + 中文概括
+│   ├── summarize-legacy.mjs        # 给历史项目批量生成中文概括（需模型 Key）
 │   ├── build.mjs                   # latest.json → latest.js
 │   ├── build-site.mjs              # 生成可部署的 _site/ 目录
 │   ├── serve.mjs                   # 本地预览服务器（4321 端口）
@@ -118,8 +124,35 @@ npm run collect -- --reuse
 - **来源**：`GitHubDaily/GitHubDaily`。该项目**没有 LICENSE**，所以这里只做「项目名 + 原文链接」的引用，不保存、不转载它的任何文案。
 - **结果**：原始 3750 条，去重后 **3438 个项目**，覆盖 2018–2025 年；保留原分类（AI 工具、实用工具、资料集合…）和它出现过的年份。
 - **文件**：`data/legacy/githubdaily.json`（结构化数据）、`data/legacy/githubdaily.js`（给页面用）。
-- **链接健康度**：抽样 21 条，19 条正常、1 条改名重定向、1 条 404。老仓库会改名或删除，后续接页面时要做一次存活校验。
 - 目前只有数据、没有展示；等确定「历史时间线」的形态再接页面。
+
+### 活跃度检查
+
+```bash
+npm run activity          # 逐个查最后提交时间，约 25 分钟，增量保存可续跑
+npm run legacy:build      # 合并成页面数据 data/legacy/legacy.js
+```
+
+结果（2026-10-19 检查）：**仍在更新 1409 · 更新放缓 669 · 已停更 1272 · 状态未知 88**。
+
+- 判断标准：90 天内有提交 = 仍在更新；90–365 天 = 放缓；超过 365 天 = 已停更，并显示最后提交月份。
+- 数据源是 `github.com/{owner}/{repo}/commits.atom`，不占 GitHub API 配额。
+- 「状态未知」是改名、删库或空仓库，后续可以再用 API 解析一次重定向。
+- 页面：`legacy.html`（右上角 🗂️ 进入），支持按状态 / 年份 / 分类筛选和搜索。
+
+### 给历史项目补中文概括
+
+脚本：`npm run legacy:summarize`（读 README 开头片段，让模型写一句中文，不保存原文）。
+
+```powershell
+$env:OPENAI_API_KEY="sk-..."
+$env:OPENAI_BASE_URL="https://api.deepseek.com/v1"   # 可省略
+$env:OPENAI_MODEL="deepseek-chat"                    # 可省略
+npm run legacy:summarize
+```
+
+- 已有 162 条中文概括来自当前榜单的重合项目；其余需要模型生成。
+- 生成结果写 `data/legacy/summary-zh.json`，增量保存，中断可续跑。
 
 > 若原作者要求下架，删掉 `data/legacy/` 并去掉页面入口即可，不影响其它数据。
 

@@ -11,6 +11,9 @@
     "summary:pending": "node scripts/pending-summaries.mjs",
     "summary:apply": "node scripts/apply-summaries.mjs",
     "import:githubdaily": "node --use-system-ca scripts/import-githubdaily.mjs",
+    "activity": "node --use-system-ca scripts/check-activity.mjs",
+    "legacy:build": "node scripts/build-legacy.mjs",
+    "legacy:summarize": "node --use-system-ca scripts/summarize-legacy.mjs",
     "serve": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs"
   },
