@@ -361,6 +361,84 @@
     if (e.target === dialog) dialog.close();
   });
 
+  /* ---------------- 往期回顾（每天 Top 80 归档） ---------------- */
+  const historyDialog = $('historyDialog');
+  const historyDateSel = $('historyDate');
+  const historyMeta = $('historyMeta');
+  const historyList = $('historyList');
+  const ARCHIVE_DATES = Array.isArray(window.GH_ARCHIVE_DATES) ? window.GH_ARCHIVE_DATES : [];
+  const archiveLoading = new Set();
+
+  function renderArchive(date) {
+    const data = window.GH_ARCHIVE && window.GH_ARCHIVE[date];
+    if (!data) {
+      historyMeta.textContent = '';
+      historyList.replaceChildren(el('p', 'repo-path', '这个日期没有归档数据'));
+      return;
+    }
+    historyMeta.textContent = `${date} · ${data.items.length} 条`;
+    const frag = document.createDocumentFragment();
+    data.items.forEach((it, i) => {
+      const row = el('div', 'history-row');
+      row.append(el('span', 'history-rank', String(i + 1)));
+      const a = el('a', 'history-name', it.f);
+      a.href = it.u;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      row.append(a);
+      const cat = CAT_MAP.get(it.c);
+      if (cat) row.append(el('span', 'history-cat', cat.name));
+      if (it.r) row.append(el('span', 'history-rank-badge', '#' + it.r));
+      row.append(el('span', 'history-desc', it.z || ''));
+      row.append(el('span', 'history-stars', '★' + fmtNum(it.s)));
+      frag.append(row);
+    });
+    historyList.replaceChildren(frag);
+  }
+
+  function loadArchive(date) {
+    if (window.GH_ARCHIVE && window.GH_ARCHIVE[date]) return renderArchive(date);
+    if (archiveLoading.has(date)) return;
+    archiveLoading.add(date);
+    historyMeta.textContent = '加载中…';
+    historyList.replaceChildren();
+    const script = document.createElement('script');
+    script.src = `data/archive/${date}.js`;
+    script.onload = () => {
+      archiveLoading.delete(date);
+      renderArchive(date);
+    };
+    script.onerror = () => {
+      archiveLoading.delete(date);
+      historyMeta.textContent = '归档文件加载失败';
+    };
+    document.head.append(script);
+  }
+
+  function openHistory() {
+    if (!ARCHIVE_DATES.length) {
+      toast('还没有历史归档，明天再采集一次就有了');
+      return;
+    }
+    historyDateSel.replaceChildren(
+      ...ARCHIVE_DATES.map((d) => {
+        const option = document.createElement('option');
+        option.value = d;
+        option.textContent = d;
+        return option;
+      }),
+    );
+    historyDateSel.value = ARCHIVE_DATES[0];
+    historyDialog.showModal();
+    loadArchive(ARCHIVE_DATES[0]);
+  }
+
+  historyDialog.addEventListener('click', (e) => {
+    if (e.target === historyDialog) historyDialog.close();
+  });
+  historyDateSel.addEventListener('change', () => loadArchive(historyDateSel.value));
+  $('historyBtn').addEventListener('click', openHistory);
+
   function showHelp() {
     const box = el('div');
     box.append(el('h2', null, '怎么用这个站'));
@@ -373,6 +451,7 @@
       ['🔥 综合热度', '优先展示 GitHub Trending 当日上榜项目，再叠加周增速和总 Star。'],
       ['📈 涨幅', '「+3.2k/周」需要至少两次采集后才有；首日只有 Trending 的当日涨幅。'],
       ['⭐ 收藏', '点卡片右下角星标，数据存在本机浏览器，下次打开还在。'],
+      ['📅 往期回顾', '点右上角日历图标，可以翻看以前每天的热门前 80 条——历史是本站自己归档的，不依赖外部。'],
       ['📋 导出', '把当前筛选结果复制成 Markdown 列表，直接贴到聊天或笔记里分享。'],
     ];
     for (const [t, d] of items) {
@@ -461,7 +540,7 @@
       searchInput.focus();
       searchInput.select();
     } else if (e.key === 'Escape') {
-      if (dialog.open) return;
+      if (dialog.open || historyDialog.open) return;
       if (document.activeElement === searchInput) {
         searchInput.value = '';
         state.q = '';

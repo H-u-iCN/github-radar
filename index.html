@@ -21,6 +21,7 @@
     </div>
     <div class="topbar-actions">
       <span class="meta-line" id="metaLine">加载中…</span>
+      <button class="icon-btn" id="historyBtn" title="往期回顾" aria-label="往期回顾">📅</button>
       <button class="icon-btn" id="themeBtn" title="切换深浅色 (T)" aria-label="切换深浅色">🌗</button>
       <button class="icon-btn" id="helpBtn" title="使用说明" aria-label="使用说明">?</button>
     </div>
@@ -103,9 +104,22 @@
   <div class="dialog-body" id="detailBody"></div>
 </dialog>
 
+<dialog id="historyDialog" class="dialog">
+  <div class="dialog-body">
+    <h2>往期回顾</h2>
+    <p class="repo-path">每天保存当日热门前 80 条，历史来自本站自己的采集归档。</p>
+    <div class="history-toolbar">
+      <select id="historyDate"></select>
+      <span class="history-meta" id="historyMeta"></span>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</dialog>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script src="data/latest.js"></script>
+<script src="data/archive/index.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>

@@ -345,6 +345,39 @@ async function main() {
   const historyDir = path.join(ROOT, CONFIG.historyDir);
   await fs.mkdir(historyDir, { recursive: true });
 
+  // 11.1 历史归档：每天保存当日热门前 80 条，供站点「往期回顾」使用
+  const archiveDir = path.join(dataDir, 'archive');
+  await fs.mkdir(archiveDir, { recursive: true });
+  const topDaily = projects.slice(0, 80).map((p) => ({
+    f: p.fullName,
+    n: p.name,
+    u: p.url,
+    s: p.stars,
+    z: p.descZh || p.desc || '',
+    c: p.primaryCategory,
+    r: p.trendingRank || 0,
+  }));
+  await fs.writeFile(
+    path.join(archiveDir, `${today}.js`),
+    `window.GH_ARCHIVE=window.GH_ARCHIVE||{};window.GH_ARCHIVE['${today}']=${JSON.stringify({ date: today, items: topDaily })};\n`,
+    'utf8',
+  );
+  const archiveFiles = (await fs.readdir(archiveDir))
+    .filter((f) => /^\d{4}-\d{2}-\d{2}\.js$/.test(f))
+    .sort()
+    .reverse();
+  await fs.writeFile(
+    path.join(archiveDir, 'index.js'),
+    `window.GH_ARCHIVE_DATES=${JSON.stringify(archiveFiles.map((f) => f.slice(0, 10)))};\n`,
+    'utf8',
+  );
+  // 归档保留一年
+  const archiveCutoff = shiftDay(today, -365);
+  for (const f of archiveFiles) {
+    if (f.slice(0, 10) < archiveCutoff) await fs.unlink(path.join(archiveDir, f));
+  }
+  payload.meta.archiveDays = archiveFiles.length;
+
   const json = JSON.stringify(payload);
   await fs.writeFile(path.join(dataDir, 'latest.json'), json, 'utf8');
   await fs.writeFile(

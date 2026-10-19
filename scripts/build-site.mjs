@@ -37,6 +37,18 @@ for (const file of await fs.readdir(path.join(ROOT, 'assets'))) {
   await fs.copyFile(path.join(ROOT, 'assets', file), path.join(SITE, 'assets', file));
 }
 
+// 往期回顾：每日归档脚本（index.js + YYYY-MM-DD.js）
+const archiveDir = path.join(ROOT, 'data', 'archive');
+try {
+  const archiveFiles = await fs.readdir(archiveDir);
+  await fs.mkdir(path.join(SITE, 'data', 'archive'), { recursive: true });
+  for (const file of archiveFiles) {
+    await fs.copyFile(path.join(archiveDir, file), path.join(SITE, 'data', 'archive', file));
+  }
+} catch {
+  // 还没有归档，第一次采集后才有
+}
+
 // 顺手放一个 robots.txt
 await fs.writeFile(path.join(SITE, 'robots.txt'), 'User-agent: *\nAllow: /\n', 'utf8');
 

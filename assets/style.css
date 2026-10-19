@@ -484,6 +484,86 @@ body {
 .btn.primary { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .btn.primary:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); }
 
+/* ---------- 往期回顾 ---------- */
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 8px;
+  flex-wrap: wrap;
+}
+
+.history-toolbar select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.history-toolbar select:focus { border-color: var(--blue); }
+
+.history-meta { color: var(--faint); font-size: 12px; }
+
+.history-list { display: flex; flex-direction: column; }
+
+.history-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 2px;
+  border-bottom: 1px dashed var(--border);
+  font-size: 13px;
+  min-width: 0;
+}
+
+.history-row:last-child { border-bottom: 0; }
+.history-row:hover { background: var(--card-hover); }
+
+.history-rank {
+  width: 30px;
+  flex: none;
+  text-align: right;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.history-name {
+  flex: none;
+  max-width: 44%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.history-name:hover { color: var(--blue); }
+
+.history-cat { flex: none; font-size: 11px; color: var(--blue); opacity: 0.85; }
+.history-rank-badge { flex: none; font-size: 11px; color: var(--accent); }
+
+.history-desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.history-stars {
+  flex: none;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
 /* ---------- Toast ---------- */
 .toast {
   position: fixed;
