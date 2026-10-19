@@ -1,0 +1,16 @@
+logs/
+node_modules/
+.DS_Store
+Thumbs.db
+_site/
+
+# 本地预览截图 / 临时测试页 / 摘要中间文件
+.preview/
+_*.html
+data/_*
+
+# 页面用的数据副本，部署前由 scripts/build.mjs 从 latest.json 生成
+data/latest.js
+
+# 本机下载的软件包和二进制，不要提交（项目调研 .md 可以单独拷到 docs/ 再提交）
+Kazumi_windows_2.3.9/

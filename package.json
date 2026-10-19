@@ -1,0 +1,19 @@
+{
+  "name": "github-open-source-radar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "定期汇总 GitHub 热门开源项目，按主题分类展示的静态网站",
+  "scripts": {
+    "collect": "node --use-system-ca scripts/collect.mjs",
+    "collect:plain": "node scripts/collect.mjs",
+    "build": "node scripts/build.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "summary:pending": "node scripts/pending-summaries.mjs",
+    "summary:apply": "node scripts/apply-summaries.mjs",
+    "serve": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

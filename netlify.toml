@@ -1,0 +1,18 @@
+# Netlify 配置：静态站，构建时把 data/latest.json 转成页面数据并输出到 _site
+[build]
+  command = "node scripts/build-site.mjs"
+  publish = "_site"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# 静态资源缓存一周，数据缓存 5 分钟（每天更新一次，够用）
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300"

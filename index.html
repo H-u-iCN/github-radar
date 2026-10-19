@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark light" />
+<title>GitHub 开源雷达 · 热门项目汇总</title>
+<meta name="description" content="自动汇总 GitHub 热门开源项目，按主题分类、可按热度与增速筛选，方便挑选和分享。" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">🛰️</span>
+      <div>
+        <h1>GitHub 开源雷达</h1>
+        <p class="tagline">自动汇总 · 主题分类 · 按热度挑选</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="meta-line" id="metaLine">加载中…</span>
+      <button class="icon-btn" id="themeBtn" title="切换深浅色 (T)" aria-label="切换深浅色">🌗</button>
+      <button class="icon-btn" id="helpBtn" title="使用说明" aria-label="使用说明">?</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="stats" aria-label="统计">
+    <div class="stat"><b id="statTotal">-</b><span>收录项目</span></div>
+    <div class="stat"><b id="statCats">-</b><span>主题分类</span></div>
+    <div class="stat"><b id="statTrending">-</b><span>今日上榜</span></div>
+    <div class="stat"><b id="statZh">-</b><span>中文概括</span></div>
+  </section>
+
+  <section class="toolbar" aria-label="筛选">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="search" placeholder="搜索项目名、简介、标签…（按 / 聚焦）" autocomplete="off" />
+      <kbd>/</kbd>
+    </div>
+
+    <div class="selects">
+      <label class="field">
+        <span>排序</span>
+        <select id="sortSel">
+          <option value="heat">综合热度</option>
+          <option value="stars">总 Star</option>
+          <option value="trend">今日涨幅</option>
+          <option value="week">周涨幅</option>
+          <option value="newest">最新创建</option>
+          <option value="updated">最近更新</option>
+          <option value="name">名称</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>语言</span>
+        <select id="langSel"><option value="all">全部</option></select>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="favOnly" />
+        <span class="toggle-track"></span>
+        <span>只看收藏</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="newOnly" />
+        <span class="toggle-track"></span>
+        <span>只看新项目</span>
+      </label>
+      <button class="ghost-btn" id="exportBtn" title="把当前筛选结果复制为 Markdown 列表">导出 Markdown</button>
+    </div>
+
+    <div class="chips" id="catChips" role="group" aria-label="主题分类"></div>
+  </section>
+
+  <div class="list-head">
+    <span id="resultCount">—</span>
+    <span class="hint" id="sortHint"></span>
+  </div>
+
+  <section id="grid" class="grid" aria-live="polite"></section>
+
+  <div id="empty" class="empty" hidden>
+    <p>没有匹配的项目。</p>
+    <p class="muted">试试换个关键词，或把分类切回「全部」。</p>
+  </div>
+</main>
+
+<footer class="footer wrap">
+  <p>
+    数据来自 GitHub 公开 API 与 Trending 页面，由 <code>scripts/collect.mjs</code> 自动生成，
+    每天更新一次。<span id="sourceLine"></span>
+  </p>
+  <p class="muted">
+    中文概括是人工/机器整理的「这是什么」，不是逐字翻译；项目原文和许可证请点开详情核对。
+    下载和使用前请确认仓库真实性，本站仅做索引，不托管任何项目代码。
+  </p>
+</footer>
+
+<dialog id="detail" class="dialog">
+  <div class="dialog-body" id="detailBody"></div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="data/latest.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
