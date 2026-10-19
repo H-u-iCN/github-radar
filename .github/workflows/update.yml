@@ -8,19 +8,14 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: gh-radar-daily
   cancel-in-progress: false
 
 jobs:
-  update-and-deploy:
+  update:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,8 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/collect.mjs
 
-      - name: 生成静态站点
-        run: node scripts/build-site.mjs
+      - name: 生成历史索引
+        run: node scripts/build-legacy.mjs
 
       - name: 提交数据变更
         run: |
@@ -47,12 +42,3 @@ jobs:
             git commit -m "chore(data): 更新 $(date -u +%F) 热门项目"
             git push
           fi
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
