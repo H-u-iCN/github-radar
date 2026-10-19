@@ -10,6 +10,7 @@
     "build:site": "node scripts/build-site.mjs",
     "summary:pending": "node scripts/pending-summaries.mjs",
     "summary:apply": "node scripts/apply-summaries.mjs",
+    "import:githubdaily": "node --use-system-ca scripts/import-githubdaily.mjs",
     "serve": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs"
   },
